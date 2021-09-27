@@ -7,22 +7,20 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 
 contract SneakerDrop {
     address[] public contracts;
-    address public lastContractAddress;
 
     event newSneakerContract(address contractAddress);
-
-    constructor() public {}
 
     function newSneaker(string memory _name, string memory _symbol)
         public
         returns (address newContract)
     {
-        Sneaker s = (new Sneaker)(_name, _symbol);
-        contracts.push(s);
-        lastContractAddress = address(s);
-        emit newSneakerContract(s);
-        return s;
+        Sneaker c = new Sneaker(_name, _symbol);
+        contracts.push(address(c));
+        emit newSneakerContract(address(c));
+        return address(c);
     }
+
+    function getSneakerNames() external returns (string[])
 }
 
 contract Sneaker is ERC721Enumerable, Ownable {
@@ -42,4 +40,12 @@ contract Sneaker is ERC721Enumerable, Ownable {
         ERC721(name, symbol)
     {}
 
+    function addToConfList(uint256[] calldata confList) external onlyOwner {
+        for(uint i = 0; i < confList.length; i++){
+            _confList[confList[i]] = true;
+        }
+    }
+    function removeFromConfList(uint256 confNumber) internal {
+
+    }
 }
