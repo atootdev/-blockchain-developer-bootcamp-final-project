@@ -9,13 +9,11 @@ module.exports = {
       network_id: "*",       // Any network (default: none)
     },
   },
-  contracts_directory: './src/contracts/',
-  contracts_build_directory: './src/abis/',
-  mocha: {
-  },
+  contracts_directory: './contracts/',
+  contracts_build_directory: './client/src/build/contracts/',
   compilers: {
     solc: {
-      version: "0.8.7",    // Fetch exact version from solc-bin (default: truffle's version)
+      version: "0.8.9",    // Fetch exact version from solc-bin (default: truffle's version)
       optimizer: {
         enabled: true,
         runs: 200

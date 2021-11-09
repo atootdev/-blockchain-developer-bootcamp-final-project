@@ -2,9 +2,12 @@
   "name": "blockchain-developer-bootcamp-final-project",
   "version": "1.0.0",
   "description": "An Ethereum NFT for Sneaker Drops",
-  "main": "index.js",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && sexit 1"
   },
   "repository": {
     "type": "git",
@@ -25,22 +28,11 @@
     "babel-preset-stage-2": "^6.24.1",
     "babel-preset-stage-3": "^6.24.1",
     "babel-register": "^6.26.0",
-    "bootstrap": "^5.1.1",
     "chai": "^4.3.4",
     "chai-as-promised": "^7.1.1",
     "chai-bignumber": "^3.0.0",
-    "react": "^17.0.2",
-    "react-bootstrap": "^1.6.3",
-    "react-dom": "^17.0.2",
-    "react-scripts": "^4.0.3",
     "truffle": "^5.4.11",
-    "truffle-flattener": "^1.5.0",
-    "web3": "^1.5.3"
-  },
-  "browserslist": [
-    ">0.25%",
-    "not dead",
-    "not ie <= 11",
-    "not op_mini all"
-  ]
+    "truffle-contract": "^4.0.31",
+    "truffle-flattener": "^1.5.0"
+  }
 }
