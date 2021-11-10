@@ -1,4 +1,5 @@
-import SneakerTokenOne from "../build/contracts/SneakerTokenOne.json"
+import SneakerDrop from "../build/contracts/SneakerDrop.json";
+import SneakerTokenOne from "../build/contracts/SneakerTokenOne.json";
 import SneakerTokenTwo from "../build/contracts/SneakerTokenTwo.json";
 import SneakerTokenThree from "../build/contracts/SneakerTokenThree.json";
 import SneakerTokenFour from "../build/contracts/SneakerTokenFour.json";
