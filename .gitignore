@@ -90,8 +90,7 @@ out
 dist
 
 # Contracts
-build/contracts
-test/dev_contracts
+build
 
 # Gatsby files
 .cache/
