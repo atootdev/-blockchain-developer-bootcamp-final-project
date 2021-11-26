@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Web3 from 'web3';
 import Navbar from './components/Navbar';
 import TokenList from './components/TokenList';
-import { CONTRACTS } from './config';
+import { contract_jsons, CONTRACTS } from './config';
 class App extends Component {
   constructor(props) {
     super(props);
@@ -26,19 +26,25 @@ class App extends Component {
     let web3;
     if(window.ethereum){
       web3 = new Web3(window.ethereum);
+      this.setState({ connectedweb3: true });
     } else {
-      web3 = new Web3(new Web3.providers.HttpProvider('https://ropsten.infura.io/v3/07998ad3f9eb407c9428e52663f5331e'));
+      window.alert('Non-Ethereum browser detected. You should consider trying MetaMask!');
     }
-    this.setState({ connectedweb3: true });
     const accounts = await web3.eth.getAccounts();
     this.setState({ account: accounts[0] });
     if(this.state.account !== undefined) {
       this.setState({ connectedWallet: true })
     }
-    console.log(this.state.account);
-    for(var i = 0; i < CONTRACTS.length; i++){
-      let abi = CONTRACTS[i]['abi'];
-      let address = CONTRACTS[i]['address'];
+    const networkId = await web3.eth.net.getId()
+    let contracts;
+    if(networkId !== 4){
+      contracts = contract_jsons;
+    } else {
+      contracts = CONTRACTS;
+    }
+    for(var i = 0; i < contracts.length; i++){
+      let abi = contracts[i].abi;
+      let address = contracts[i].networks[networkId].address;
       const contract = new web3.eth.Contract(abi, address);
       this.setState({
         contracts: [...this.state.contracts, contract]
