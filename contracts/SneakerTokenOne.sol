@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.7.0 <0.9.0;
+pragma solidity 0.8.9;
 
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -64,8 +64,8 @@ contract SneakerTokenOne is ERC721Enumerable, Ownable, ISneaker, ISneakerMetadat
     /// @dev Allows anyone with a valid confirmation code to mint a token.
     /// @param confCode Confirmation code.
     function mint(string memory confCode) public activeContract activeCode(confCode) {
-        _safeMint(msg.sender, sneakerList[confCode].tokenId);
         sneakerList[confCode].active = false;
+        _safeMint(msg.sender, sneakerList[confCode].tokenId);
         emit TokenMinted(msg.sender, sneakerList[confCode].tokenId);
         emit SneakerListUpdated();
     }
@@ -101,7 +101,8 @@ contract SneakerTokenOne is ERC721Enumerable, Ownable, ISneaker, ISneakerMetadat
     function tokenURI(uint256 tokenId) public view override(ERC721) returns (string memory) {
         /// @dev Convert string to bytes so we can check if it's empty or not.
         string memory revealedBaseURI = _tokenURI;
-        return bytes(revealedBaseURI).length > 0 ? _tokenURI :
-            string(abi.encodePacked(revealedBaseURI, tokenId.toString()));
+        return bytes(revealedBaseURI).length > 0 ? 
+        string(abi.encodePacked(revealedBaseURI, tokenId.toString())) : 
+        _tokenURI;
     }
 }

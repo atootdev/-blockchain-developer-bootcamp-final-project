@@ -1,154 +1,146 @@
 import React, { Component } from 'react';
 import Web3 from 'web3';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap/dist/js/bootstrap.min.js';
-import './App.css';
 import Navbar from './components/Navbar';
 import TokenList from './components/TokenList';
-import { contract_jsons, contract_names } from './utils/Web3Wrapper.config'
-
+import { CONTRACTS } from './config';
 class App extends Component {
   constructor(props) {
     super(props);
+    this.connectWallet = this.connectWallet.bind(this);
     this.state = {
-      account: '',
-      seller: false,
-      contract: {},
+      account: undefined,
       contracts: [],
-      owner: '',
-      tokenName: '',
-      isActive: false,
-      tokenImage: '',
+      tokens: [],
       loading: true,
-      connected: false,
+      connectedweb3: false,
+      connectedWallet: false
     };
   }
 
-  // componentDidMount() {
-  //   this.loadBlockchainData()
-  // }
+  async componentDidMount() {
+    await this.loadBlockchainData()
+    await this.loadContracts()
+  }
 
-  async connectWeb3() {
+  async loadBlockchainData() {
+    let web3;
+    if(window.ethereum){
+      web3 = new Web3(window.ethereum);
+    } else {
+      web3 = new Web3(new Web3.providers.HttpProvider('https://ropsten.infura.io/v3/07998ad3f9eb407c9428e52663f5331e'));
+    }
+    this.setState({ connectedweb3: true });
+    const accounts = await web3.eth.getAccounts();
+    this.setState({ account: accounts[0] });
+    if(this.state.account !== undefined) {
+      this.setState({ connectedWallet: true })
+    }
+    console.log(this.state.account);
+    for(var i = 0; i < CONTRACTS.length; i++){
+      let abi = CONTRACTS[i]['abi'];
+      let address = CONTRACTS[i]['address'];
+      const contract = new web3.eth.Contract(abi, address);
+      this.setState({
+        contracts: [...this.state.contracts, contract]
+      })
+    }
+  }
+
+  async loadContracts() {
+    const contracts = this.state.contracts;
+    let tokens = [];
+    for(var i = 0; i < contracts.length; i++) {
+      const contract = contracts[i];
+      const name = await contract.methods.name().call();
+      const owner = await contract.methods.owner().call();
+      const image = await contract.methods.tokenURI(0).call();
+      const active = await contract.methods.isActive().call();
+      tokens[i] = { 
+        id: i,
+        name: name, 
+        owner: owner,
+        image: image, 
+        active: active 
+      };
+    };
+    this.setState({ tokens: tokens });
+    this.setState({ loading: false })
+  }
+
+  async connectWallet() {
     this.setState({ loading: true });
     if (window.ethereum) {
-      await window.ethereum.request({ method: 'eth_requestAccounts' });
-      await this.loadBlockchainData();
+      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      this.setState({ account: accounts[0] });
+      this.setState({ connectedWallet: true });
     } else {
       window.alert(
         'Non-Ethereum browser detected. You should consider trying MetaMask!'
       );
     }
-    this.setState({ connected: true });
+    await this.loadContracts();
     this.setState({ loading: false });
   }
 
-  async loadBlockchainData() {
-    const web3 = new Web3(window.ethereum);
-    // const web3 = new Web3(Web3.givenProvider || "http://localhost:7545")
-    const accounts = await web3.eth.getAccounts();
-    this.setState({ account: accounts[0] });
-    for(var i = 0; i < contract_jsons.length; i++){
-      var contract, json;
-      json = contract_jsons[i];
-      const networkId = await web3.eth.net.getId();
-      const deployedNetwork = json.networks[networkId];
-      if(deployedNetwork) {
-        contract = await new web3.eth.Contract(json.abi, deployedNetwork.address);
-        this.setState({
-          contracts: [...this.state.contracts, contract]
-        })
-      }
-    }
-    await this.loadContractData(this.state.contracts[0])
-  }
-
-  async loadContractData(contract) {
-    this.setState({ contract });
-    const owner = await contract.methods.owner().call();
-    this.setState({ owner });
-    const tokenName = await contract.methods.name().call();
-    this.setState({ tokenName });
-    const isActive = await contract.methods.isActive().call();
-    this.setState({ isActive });
-    const tokenImage = await contract.methods.tokenURI(0).call();
-    this.setState({ tokenImage });
-    let seller;
-    if (this.state.account === this.state.owner) {
-      seller = true
-    } else {
-      seller = false
-    }
-    this.setState({ seller });
-  }
-
-  async loadContract(sneaker) {
-    const contracts = this.state.contracts;
-    for(var i = 0; i < contracts.length; i++) {
-      let contract = contracts[i];
-      let name = await contract.methods.name().call();
-      if(name === sneaker){
-        this.loadContractData(contract);
-        break;
-      }
-    }
-  }
-
-  setIsActive = (active) => {
-    this.state.contract.methods
-      .setIsActive(active)
-      .send({ from: this.state.account })
-      .on('transactionHash', (hash) => {
-        this.setState({ isActive: active });
-      });
+  setIsActive = (i, active) => {
+    this.setState({ loading: true });
+    const contract = this.state.contracts[i];
+    contract.methods.setIsActive(active)
+    .send({ from: this.state.account })
+    .once('receipt', (receipt) => {
+      this.loadContracts();
+    });
   };
+  
 
-  mint = (code) => {
-    this.state.contract.methods.mint(code).send({ from: this.state.account })
-  }
+  mint = (i, code) => {
+    this.setState({ loading: true });
+    const contract = this.state.contracts[i];
+    contract.methods.mint(code).send({ from: this.state.account })
+    .on('transactionHash', (hash) => {
+      this.setState({ loading: false })
+    });
+  };
+  // fix when setState is performed. Show error if failed.
 
   render() {
-    let content
-    if (this.state.loading) {
-      if (this.state.connected) {
-        content = (
-          <div id='loader' className='text-center'>
-            <p className='text-center'>Loading...</p>
-          </div>
-        );
-      } else {
-        content = (
-          // <div id='login' className='text-center'>
-          //   <p className='text-center'>Login In</p>
-          // </div>
-          <button className="btn btn-primary" onClick={() => this.connectWeb3()}>
-                    Connect MetaMask
-                    </button>
-        );
-      }
-    } else {
-      content = (
-        <TokenList
-          name={this.state.tokenName}
-          seller={this.state.seller}
-          isActive={this.state.isActive}
-          image={this.state.tokenImage}
-          setIsActive={this.setIsActive}
-          mint={this.mint}
-        />
-      );
-    }
+    const { tokens, loading } = this.state;
+    
     return (
       <div>
-        <Navbar account={this.state.account} />
-        <div className='container-fluid'>
-          <div className='row'>
-            <main
-              role='main'
-              className='col-lg-12 d-flex justify-content-center'>
-              {content}
-            </main>
+        <Navbar
+          account={this.state.account}
+          connectedWallet={this.state.connectedWallet}
+          connectWallet={this.connectWallet}
+        />
+
+
+        <main>
+          <div className='container-fluid '>
+
+            {loading
+
+              ? <div className='spinner-border' role='status'></div>
+
+              : <>
+              <div className="row row-cols-2 row-cols-md-3 g-4">
+                {tokens.map((data) => {
+                  return (
+                    <TokenList
+                      {...data}
+                      key={data.id}
+                      account={this.state.account}
+                      setIsActive={this.setIsActive}
+                      mint={this.mint}
+                    />
+                  )
+                })}
+              </div>
+              </>
+            }
           </div>
-        </div>
+        </main>
+
       </div>
     );
   }

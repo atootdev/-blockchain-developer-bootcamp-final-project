@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.7.0 <0.9.0;
+pragma solidity 0.8.9;
 
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -64,8 +64,8 @@ contract SneakerTokenThree is ERC721Enumerable, Ownable, ISneaker, ISneakerMetad
     /// @dev Allows anyone with a valid confirmation code to mint a token.
     /// @param confCode Confirmation code.
     function mint(string memory confCode) public activeContract activeCode(confCode) {
-        _safeMint(msg.sender, sneakerList[confCode].tokenId);
         sneakerList[confCode].active = false;
+        _safeMint(msg.sender, sneakerList[confCode].tokenId);
         emit TokenMinted(msg.sender, sneakerList[confCode].tokenId);
         emit SneakerListUpdated();
     }
