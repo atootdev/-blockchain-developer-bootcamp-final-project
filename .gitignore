@@ -89,8 +89,9 @@ out
 .nuxt
 dist
 
-# Build contracts
-/build
+# Contracts
+build/contracts
+test/dev_contracts
 
 # Gatsby files
 .cache/
