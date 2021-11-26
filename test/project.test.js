@@ -19,78 +19,93 @@ contract('SneakerTest', async (accounts) => {
       "instance": Red,
       "name": "Air Jordan 1 Off-White Retro High OG Chicago",
       "symbol": "OWAJR",
-      "account": 0,
-      "image": "ipfs://bafybeibm2xpc3kg2uzdzswpmzfurvvkxihumugstatihur4keemouldg2i",
-      "tokenURI": 'ipfs://bafybeibjsmnwszcvfebzcsm7skpy3yzp5cec7ejus4tlv6j54syxdy4jx4',
+      "owner": nike,
+      "image": "https://i.imgur.com/pcKn2GQ.png",
     },
     {
       "instance": Blue,
       "name": "Air Jordan 1 Off-White Retro High OG UNC",
       "symbol": "OWAJB",
-      "account": 0,
-      "image": "ipfs://bafybeifc2dmezpgxferwxthkyurzfrtbkkqj6o2wzsaoh53wnxxmmv3dwm",
-      "tokenURI": 'ipfs://bafybeibjb3wl6ks6y4av3egshezycgk5jmrdgovamvzyrzzwhmgyn4jlty',
+      "owner": nike,
+      "image": "https://i.imgur.com/OtC9rVb.jpg",
     },
     {
       "instance": White,
       "name": "Air Jordan 1 Off-White Retro High OG White",
       "symbol": "OWAJW",
-      "account": 0,
-      "image": "ipfs://bafybeiftrnk5owcorwmam5jeguu3ybnmte3ppquxlide5y5easifh5qsma",
-      "tokenURI": 'ipfs://bafybeiedcw3nhbxuthx7rlpgadhxzc7fthb5r3wqw7eystam4qlwp4xdfa',
+      "owner": nike,
+      "image": "https://i.imgur.com/frqeCIi.jpg",
     },
     {
       "instance": Zebra,
       "name": "adidas Yeezy Boost 350 V2 Zebra",
       "symbol": "YZBA",
-      "account": 1,
+      "owner": adidas,
+      "image": "https://i.imgur.com/xYkBVKr.jpg"
     }
     ];
 
-  let sneakerNike, sneakerAd, sneakers, sneaker
+  let sneakerRed, sneakerBlue, sneakerWhite, sneakerZebra, sneaker
 
   before(async () => {
-    sneakerNike = await Red.new(sneakerProps[0]['name'], sneakerProps[0]['symbol']);
-    sneakerAd = await Zebra.new(sneakerProps[3]['name'], sneakerProps[3]['symbol']);
+    sneakerRed = await Red.new(sneakerProps[0]['name'], sneakerProps[0]['symbol']);
+    sneakerBlue = await Blue.new(sneakerProps[1]['name'], sneakerProps[1]['symbol']);
+    sneakerWhite = await White.new(sneakerProps[2]['name'], sneakerProps[2]['symbol']);
+    sneakerZebra = await Zebra.new(sneakerProps[3]['name'], sneakerProps[3]['symbol']);
   });
 
-  describe('Sneaker deployment', async () => {
-    it('nike: should have an address', async () => {
-      sneaker = sneakerNike
-      let address = sneaker.address
-      assert.notEqual(address, emptyAddress)
+  describe('Deploy Sneaker', async () => {
+    it('Red: should have an address', async () => {
+      const redAddress = sneakerRed.address
+      assert.notEqual(redAddress, emptyAddress)
     })
-    it('nike: should have a name', async () => {
-      let sneakerName = await sneaker.name()
-      assert.equal(sneakerName, sneakerProps[0]['name'])
+    it('Red: should have a name', async () => {
+      const redName = await sneakerRed.name()
+      assert.equal(redName, sneakerProps[0]['name'])
     })
-    it('adidas: should have an address', async () => {
-      sneaker = sneakerAd
-      let address = sneaker.address
-      assert.notEqual(address, emptyAddress)
-    })
-    it('adidas: should have a name', async () => {
-      let sneakerName = await sneaker.name()
-      assert.equal(sneakerName, sneakerProps[3]['name'])
+    it('Red: should have an owner', async () => {
+      let redOwner = await sneakerRed.owner()
+      assert.equal(main, redOwner)
     })
   })
 
-  describe('Transfer ownershiper', async () => {
-    it('nike: should transfer ownership to nike', async () => {
-      sneaker = sneakerNike
-      await sneaker.transferOwnership(nike)
-      let owner = await sneaker.owner()
-      assert.equal(owner, nike)
+  describe('Transfer Ownershiper', async () => {
+    it('Red: should transfer ownership to account nike', async () => {
+      await sneakerRed.transferOwnership(nike, ({ from: main }))
+      const redOwner = await sneakerRed.owner()
+      assert.equal(redOwner, nike)
 
-      await sneaker.transferOwnership({ from: adidas }).should.be.rejected;
+      await sneakerRed.transferOwnership({ from: adidas }).should.be.rejected;
     })
-    it('adidas: should transfer ownership to adidas', async () => {
-      sneaker = sneakerAd
-      await sneaker.transferOwnership(adidas)
-      let owner = await sneaker.owner()
-      assert.equal(owner, adidas)
+  })
 
-      await sneaker.transferOwnership({ from: nike }).should.be.rejected;
+  describe('Upload Confirmation Codes', async () => {
+    it('Red: should upload confirmation codes', async () => {
+      await sneakerRed.addToConfList(confirmationCodes, { from: nike })
+      const code = confirmationCodes[0];
+      const redStruct = await sneakerRed.sneakerList(code)
+      assert.equal(code, redStruct.code)
+
+      await sneakerRed.addToConfList(confirmationCodes, { from: adidas }).should.be.rejected
+    })
+  })
+
+  describe('Activate Sneaker', async () => {
+    it('Red: should set isActive to true', async () => {
+      await sneakerRed.setIsActive(true, { from: nike })
+      const redResult = await sneakerRed.isActive()
+      assert.equal(true, redResult)
+    })
+  })
+
+  describe('Mint Sneaker', async () => {
+    it('Red: should allow customer to mint NFT with confirmation code', async () => {
+      const code = confirmationCodes[0];
+      await sneakerRed.mint(code, { from: alice })
+      const redStruct = await sneakerRed.sneakerList(code)
+      assert.equal(false, redStruct.active)
+
+      await sneakerRed.mint(code, { from: bob }).should.be.rejected;
     })
   })
 })
