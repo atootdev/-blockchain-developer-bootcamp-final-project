@@ -1,7 +1,18 @@
+import SneakerTokenOne from './contracts/SneakerTokenOne.json'
+import SneakerTokenTwo from './contracts/SneakerTokenTwo.json'
+import SneakerTokenThree from './contracts/SneakerTokenThree.json'
+import SneakerTokenFour from './contracts/SneakerTokenFour.json'
+
+export const contract_jsons = [SneakerTokenOne, SneakerTokenTwo, SneakerTokenThree, SneakerTokenFour];
+
 export const CONTRACTS = [
     {
       name: "Air Jordan Off-White Chicago",
-      address: "0xE3150885ab41E20d10c30864c776D7DaC568a731",
+      networks: {
+        4: {
+          address: "0xE3150885ab41E20d10c30864c776D7DaC568a731",
+        }
+      },
       abi: [
         {
           "inputs": [
@@ -660,7 +671,11 @@ export const CONTRACTS = [
     },
     {
       name: "Air Jordan Off-White UNC",
-      address: "0x63813E0dCc9B3DB9B942dAfDc67D0A1F851c1008",
+      networks: {
+        4: {
+          address: "0x63813E0dCc9B3DB9B942dAfDc67D0A1F851c1008"
+        }
+      },
       abi: [
         {
           "inputs": [
@@ -1319,7 +1334,11 @@ export const CONTRACTS = [
     },
     {
       name: "Air Jordan Off-White White",
-      address: "0x64094082dC298C8BbB9a6f97ED9F2B0e722A5F25",
+      networks: {
+        4: {
+          address: "0x64094082dC298C8BbB9a6f97ED9F2B0e722A5F25"
+        }
+      },
       abi: [
         {
           "inputs": [
@@ -1978,7 +1997,11 @@ export const CONTRACTS = [
     },
     {
       name: "adidas Yeezy Zebra",
-      address: "0xC4eDC0a3e16EC865dCb404D888b9535F19B43bFc",
+      networks: {
+        4: {
+          address: "0xC4eDC0a3e16EC865dCb404D888b9535F19B43bFc"
+        }
+      },
       abi: [
         {
           "inputs": [
