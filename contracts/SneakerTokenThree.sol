@@ -98,6 +98,8 @@ contract SneakerTokenThree is ERC721Enumerable, Ownable, ISneaker, ISneakerMetad
         return _contractURI;
     }
 
+    /// @dev Returns the tokenURI for the specified token id.
+    /// @param tokenId Token Id.
     function tokenURI(uint256 tokenId) public view override(ERC721) returns (string memory) {
         /// @dev Convert string to bytes so we can check if it's empty or not.
         string memory revealedBaseURI = _tokenURI;
