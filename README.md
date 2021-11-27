@@ -1,10 +1,16 @@
 # Final project – Sneaker Drop
 
+## Intro
+
+The sneaker market has blown up the past decade with shoe brand titans like Nike and adidas reaping in billions. Each year customers go to great lengths to secure themselves a newly released sneaker, though few will actually ever wear them. For many sneakers are an investment. Bought anywhere between $160-$300, highly coveted or popular sneakers will resell for $2000 to $30000 and less popular sneakers going for retail to $600. However these high resell prices have made themselves a target for fraud. With every new release, thousands of counterfeit copies are made, with some looking nearly indistinguishable from the original. Many will fall victim to buying counterfeit sneakers, sometimes paying thousands of dollars for them, only to later realize they were duped. Today there is still no garunteed method to seperate the fake from the real, but hopefully NFTs can solve this problem...
+
 ## Project description
 
-An app that allows sneaker brands like Nike, adidas, etc to create NFT tokens of their limited release drops. Customers who purchase the sneaker online or instore will be sent a confirmation code either by email or printed receipt. Customers will then login to the App via Metamask and use their code to mint their sneaker NFT. 
+This project aims to create an app that allows sneaker brands like Nike and adidas to create NFT tokens of their sneakers. Customers who purchase the sneaker online or instore will be sent a confirmation code either by email or printed receipt. Customers will then login to the App via Metamask and use their code to mint their sneaker NFT. 
 
-The NFT will provide customers with certified ownership and authenticity of their physical sneaker.
+The NFT will serve as a proof of ownership and certification of authenticity of the physical sneaker.
+NFTs will be linked to the sneaker by serial code, confirmation code, and a QR code.
+When customers want to resell their shoes online or in person, all they need to do is scan the QR code on their shoe which will display the NFT contract and the current owner.
 
 ## Directory structure
 
