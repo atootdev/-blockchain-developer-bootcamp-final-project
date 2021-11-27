@@ -84,9 +84,17 @@ MNEMONIC=
 INFURA_KEY=
 ```
 
-## TODO features
-
-- Factory contract to create and access Sneaker NFT contracts
-- User contract to store Factory contracts
-- Factory contract to create and store User contracts
-- Single function in Sneaker NFT contract to get all relevant data and change variable sneakerList to private
+## Future Work
+### Short Term
+- Remove tokenId variable from Sneaker struct
+- Single function in Sneaker NFT contract to get all relevant data
+- Other contract improvements (from reviews, comments, etc)
+### Medium Term
+- Create ERC721 Factory contract
+- Create ERC721 contracts for streetwear and collectibles
+- Utilize IPFS for file storage of token meta data
+- Research solution for generating user profiles and data storage (blockchain, off/side chain?)
+### Long Term
+- Perform live test with small business
+- Research alternative blockchains for cheaper fees and faster rates
+- Improve UI/UX (state management, styling, etc)
