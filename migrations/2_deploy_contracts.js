@@ -7,26 +7,22 @@ var sneakerProps = [
   {
     "instance": SneakerTokenOne,
     "name": "Air Jordan 1 Off-White Retro High OG Chicago",
-    "symbol": "OWAJR",
-    "account": 0,
+    "symbol": "OWAJR"
   },
   {
     "instance": SneakerTokenTwo,
     "name": "Air Jordan 1 Off-White Retro High OG UNC",
-    "symbol": "OWAJB",
-    "account": 0,
+    "symbol": "OWAJB"
   },
   {
     "instance": SneakerTokenThree,
     "name": "Air Jordan 1 Off-White Retro High OG White",
-    "symbol": "OWAJW",
-    "account": 0,
+    "symbol": "OWAJW"
   },
   {
     "instance": SneakerTokenFour,
     "name": "adidas Yeezy Boost 350 V2 Zebra",
-    "symbol": "YZBA",
-    "account": 0,
+    "symbol": "YZBA"
   }
 ];
 
@@ -34,15 +30,11 @@ module.exports = async function (deployer, accounts) {
   let sneakerContract;
   let sneakerName;
   let sneakerSymbol;
-  let ownerIndex;
-  let owner;
   // Deploy All Sneaker NFTs
   for(let i = 0; i < sneakerProps.length; i++) {
     sneakerContract = sneakerProps[i]['instance']
     sneakerName = sneakerProps[i]['name']
     sneakerSymbol = sneakerProps[i]['symbol']
-    // ownerIndex = sneakerProps[i]['account']
-    // owner = await accounts[ownerIndex]
     await deployer.deploy(sneakerContract, sneakerName, sneakerSymbol);
   }
 };
