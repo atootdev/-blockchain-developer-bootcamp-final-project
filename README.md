@@ -68,7 +68,7 @@ Seller:
 ## Deployed version url:
 Deployed on Rinkeby testnet
 
-https://sneaker-drop.netlify.app/
+https://blockchain-developer-bootcamp-final-project-atootdev.netlify.app/
 
 ## Screencast link
 
