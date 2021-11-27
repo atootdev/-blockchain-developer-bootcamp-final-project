@@ -23,7 +23,7 @@ export default class Navbar extends Component {
                     target="_blank"
                     rel="noopener noreferrer"
                 >
-                    Sneaker Drop
+                    Block Drop
                 </a>
                 <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=" navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
                     <span className="navbar-toggler-icon"></span>
