@@ -1,7 +1,4 @@
 const Red = artifacts.require("SneakerTokenOne");
-const Blue = artifacts.require("SneakerTokenTwo");
-const White = artifacts.require("SneakerTokenThree");
-const Zebra = artifacts.require("SneakerTokenFour");
 const { assert } = require("chai");
 
 require('chai')
@@ -10,102 +7,121 @@ require('chai')
 
 
 contract('SneakerTest', async (accounts) => {
-  const [main, nike, adidas, alice, bob] = accounts;
+  const [main, nike, adidas, alice] = accounts;
   const emptyAddress = "0x0000000000000000000000000000000000000000";
   const confirmationCodes = ["VgvVyFh0KFDuX8bX", "pTa9w2b61Ec2ocYJ", "DFUVYzqJtPExbES5", "CJHol0Ff3HlO3GMx"];
   const invalidCodes = ["a", 123, "h9eLSh1Kfy34mOkz"];
-  const sneakerProps = [
-    {
-      "instance": Red,
-      "name": "Air Jordan 1 Off-White Retro High OG Chicago",
-      "symbol": "OWAJR",
-      "owner": nike,
-      "image": "https://i.imgur.com/pcKn2GQ.png",
-    },
-    {
-      "instance": Blue,
-      "name": "Air Jordan 1 Off-White Retro High OG UNC",
-      "symbol": "OWAJB",
-      "owner": nike,
-      "image": "https://i.imgur.com/OtC9rVb.jpg",
-    },
-    {
-      "instance": White,
-      "name": "Air Jordan 1 Off-White Retro High OG White",
-      "symbol": "OWAJW",
-      "owner": nike,
-      "image": "https://i.imgur.com/frqeCIi.jpg",
-    },
-    {
-      "instance": Zebra,
-      "name": "adidas Yeezy Boost 350 V2 Zebra",
-      "symbol": "YZBA",
-      "owner": adidas,
-      "image": "https://i.imgur.com/xYkBVKr.jpg"
-    }
-    ];
+  const sneakerProps = {
+    "instance": Red,
+    "name": "Air Jordan 1 Off-White Retro High OG Chicago",
+    "symbol": "OWAJR",
+    "owner": nike,
+    "image": "https://i.imgur.com/pcKn2GQ.png",
+  };
 
-  let sneakerRed, sneakerBlue, sneakerWhite, sneakerZebra, sneaker
+  let sneaker
 
   before(async () => {
-    sneakerRed = await Red.new(sneakerProps[0]['name'], sneakerProps[0]['symbol']);
-    sneakerBlue = await Blue.new(sneakerProps[1]['name'], sneakerProps[1]['symbol']);
-    sneakerWhite = await White.new(sneakerProps[2]['name'], sneakerProps[2]['symbol']);
-    sneakerZebra = await Zebra.new(sneakerProps[3]['name'], sneakerProps[3]['symbol']);
+    sneaker = await Red.new(sneakerProps['name'], sneakerProps['symbol']);
   });
 
-  describe('Deploy Sneaker', async () => {
-    it('Red: should have an address', async () => {
-      const redAddress = sneakerRed.address
-      assert.notEqual(redAddress, emptyAddress)
+  describe('Initial deployment', async () => {
+    it('should have an address', async () => {
+      // get address
+      const address = sneaker.address
+      // verify its not empty
+      assert.notEqual(address, emptyAddress, "Address should not be empty")
     })
-    it('Red: should have a name', async () => {
-      const redName = await sneakerRed.name()
-      assert.equal(redName, sneakerProps[0]['name'])
+    it('should have a name', async () => {
+      // get name
+      const name = await sneaker.name()
+      // verify the name is correct
+      assert.equal(name, sneakerProps['name'], `Name should be ${sneakerProps['name']}`)
     })
-    it('Red: should have an owner', async () => {
-      let redOwner = await sneakerRed.owner()
-      assert.equal(main, redOwner)
-    })
-  })
-
-  describe('Transfer Ownershiper', async () => {
-    it('Red: should transfer ownership to account nike', async () => {
-      await sneakerRed.transferOwnership(nike, ({ from: main }))
-      const redOwner = await sneakerRed.owner()
-      assert.equal(redOwner, nike)
-
-      await sneakerRed.transferOwnership({ from: adidas }).should.be.rejected;
+    it('should have an owner', async () => {
+      // get owner address
+      const owner = await sneaker.owner()
+      // verify the owner is correct
+      assert.equal(main, owner, `Initial owner should be ${main}`)
     })
   })
 
-  describe('Upload Confirmation Codes', async () => {
-    it('Red: should upload confirmation codes', async () => {
-      await sneakerRed.addToConfList(confirmationCodes, { from: nike })
+  describe('Transfer ownershiper', async () => {
+    it('should restrict access to owner', async () => {
+      // verify only current owner has access
+      await sneaker.transferOwnership(nike, ({ from: nike })).should.be.rejected
+    })
+    it('should transfer ownership to new owner', async () => {
+      // transfer ownership to new address
+      await sneaker.transferOwnership(nike, ({ from: main }))
+      // get the new owner address
+      const owner = await sneaker.owner()
+      // verify the new owner is correct
+      assert.equal(owner, nike, `New owner should be ${nike}`)
+    })
+  })
+
+  describe('Upload confirmation codes', async () => {
+    it('should restrict access to owner', async () => {
+      // verify only current owner has access
+      await sneaker.addToConfList(confirmationCodes, { from: adidas }).should.be.rejected
+    })
+    it('should upload confirmation codes', async () => {
+      // upload confirmation code list
+      await sneaker.addToConfList(confirmationCodes, { from: nike })
+      // get confirmation code for testing
       const code = confirmationCodes[0];
-      const redStruct = await sneakerRed.sneakerList(code)
-      assert.equal(code, redStruct.code)
-
-      await sneakerRed.addToConfList(confirmationCodes, { from: adidas }).should.be.rejected
+      // get Sneaker struct from the testing code
+      const result = await sneaker.sneakerList(code)
+      // verify the code was uploaded correctly
+      assert.equal(code, result.code, "Confirmation codes should match")
+    })
+    it('should prevent invalid codes from working', async () => {
+      // get invalid code
+      const code = invalidCodes[0];
+      // get Sneaker struct with invalid code
+      const result = await sneaker.sneakerList(code)
+      // verify that the code is not active (a modifier prevents inactive codes from minting)
+      assert.notEqual(true, result.active)
     })
   })
 
-  describe('Activate Sneaker', async () => {
-    it('Red: should set isActive to true', async () => {
-      await sneakerRed.setIsActive(true, { from: nike })
-      const redResult = await sneakerRed.isActive()
-      assert.equal(true, redResult)
+  describe('Activate sneaker for minting', async () => {
+    it('should restrict access to owner', async () => {
+      // verify that only the current owner has access
+      await sneaker.setIsActive(true, { from: adidas }).should.be.rejected
+    })
+    it('should set isActive to true', async () => {
+      // set the active state to true
+      await sneaker.setIsActive(true, { from: nike })
+      // get the active status
+      const result = await sneaker.isActive()
+      // verify the status is true
+      assert.equal(true, result, 'Active status should be true')
     })
   })
 
-  describe('Mint Sneaker', async () => {
-    it('Red: should allow customer to mint NFT with confirmation code', async () => {
-      const code = confirmationCodes[0];
-      await sneakerRed.mint(code, { from: alice })
-      const redStruct = await sneakerRed.sneakerList(code)
-      assert.equal(false, redStruct.active)
-
-      await sneakerRed.mint(code, { from: bob }).should.be.rejected;
+  describe('Mint sneaker', async () => {
+    it('should allow anyone to mint NFT with confirmation code', async () => {
+      // get the confirmation code
+      const code = confirmationCodes[0]
+      // mint the NFT with the code
+      await sneaker.mint(code, { from: alice })
+      // get the Sneaker struct mapped to the code
+      const result = await sneaker.sneakerList(code)
+      // verify the code is inactive
+      assert.equal(false, result.active, 'Code status should be false')
+      // Need to add verification of event
+    })
+    it('should reject invalid codes from minting', async () => {
+      // verify inactive code will be rejected
+      await sneaker.mint(invalidCodes[0], { from: alice }).should.be.rejected
+    })
+    it('should reject used codes from minting', async () => {
+      // get the confirmation code
+      const code = confirmationCodes[0]
+      // verify that used code is rejected
+      await sneaker.mint(code, { from: alice }).should.be.rejected
     })
   })
 })
