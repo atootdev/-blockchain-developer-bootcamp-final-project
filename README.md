@@ -19,19 +19,19 @@ The NFT will provide customers with certified ownership and authenticity of thei
 
 - Node.js >= v14
 - Truffle and Ganache >= 5.4.19
-- `git clone REPOSITORY_URL`
+- `git checkout master`
 
 ### Backend - Blockchain/Smart Contracts
 
 - Run `npm install` in project root to install smart contract dependencies
-- Run local testnet in either port `7545` with Ganache GUI or port `8545` with ganache client
-- `truffle migrate --network development/ganache (for GUI)`
-- `truffle console --network development/ganache`
+- Run local testnet in port `8545` with an Ethereum client, e.g. Ganache
+- `truffle migrate --network development`
+- `truffle console --network development`
 - Run tests in Truffle console: `test`
 
 ### Populate locally deployed contracts with token images and confimation codes
 
-- `truffle console --network development/ganache`
+- `truffle console --network development`
 - `exec scripts/add-codes.js`
 - `exec scripts/add-images.js`
 ### Frontend - React
@@ -39,11 +39,11 @@ The NFT will provide customers with certified ownership and authenticity of thei
 - Copy the `contracts` folder in `./build/contracts` and paste into `client/src`
 - Run `cd client`
 - Run `npm install` to install front end dependencies
+- Copy the `mnemonic` from the Ethereum client and import into Metamask
+- Make sure your Metamask network is set to `Localhost 8545` in the correct port `8545` and chain id is `1337`
+- If you get `TXRejectedError` when sending a transaction, reset your Metamask account from Advanced settings.
 - Run `npm start`
 - Open `http://localhost:3000`
-- Copy the `seed phrase` from ganache and import into Metamask
-- Make sure your Metamask localhost network is in the correct port `7545/8545` and chain id is `1337`
-- If you get `TXRejectedError` when sending a transaction, reset your Metamask account from Advanced settings.
 
 ### App Functions
 
